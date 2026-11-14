@@ -1,0 +1,8 @@
+{
+  "name": "modelforge-web",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "three": "0.187.0"
+  }
+}

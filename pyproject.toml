@@ -1,0 +1,20 @@
+[project]
+name = "modelforge"
+version = "0.1.0"
+description = "Décris un objet en langage courant, un agent le modélise dans Blender."
+requires-python = ">=3.11"
+dependencies = [
+    "claude-agent-sdk>=0.2.182",
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.30",
+]
+
+[project.scripts]
+modelforge = "modelforge.__main__:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["modelforge", "modelforge.blender"]

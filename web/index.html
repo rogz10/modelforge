@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ModelForge</title>
+  <link rel="stylesheet" href="/style.css">
+  <script type="importmap">
+    { "imports": {
+        "three": "/vendor/three/build/three.module.js",
+        "three/addons/": "/vendor/three/examples/jsm/"
+    } }
+  </script>
+</head>
+<body>
+  <aside class="chat">
+    <header class="chat-head">
+      <div class="brand"><span class="logo"></span>ModelForge</div>
+      <div class="seg effort" id="effort" title="Rapide : l'agent va vite. Soigné : il réfléchit plus longtemps, pour les objets complexes (plus lent, consomme plus).">
+        <button data-effort="medium" class="on">Rapide</button>
+        <button data-effort="high">Soigné</button>
+      </div>
+      <div class="project-bar">
+        <select id="projects" title="Mes projets"></select>
+        <button id="new-project" class="ghost" title="Nouveau projet">＋</button>
+        <button id="delete-project" class="ghost" title="Supprimer ce projet">🗑</button>
+      </div>
+    </header>
+
+    <div id="banner" class="banner" hidden></div>
+
+    <div id="messages" class="messages">
+      <div id="welcome" class="welcome">
+        <h1>Décris ce que tu veux modéliser.</h1>
+        <p>Un objet, un véhicule, un bâtiment, un personnage. Donne une taille si tu en as une ;
+           sinon je prends la taille réelle. Je te pose des questions si quelque chose d'important
+           n'est pas clair.</p>
+        <div class="suggestions">
+          <button>Un Airbus A350 avec une cabine que je peux visiter</button>
+          <button>Une petite maison de plain-pied avec salon, cuisine et chambre, meublée</button>
+          <button>Un robot de compagnie stylisé de 30 cm de haut</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="picked" class="picked" hidden>
+      <span>Pièce désignée : <b id="picked-name"></b> <span id="picked-size" class="muted"></span></span>
+      <button id="picked-clear" type="button" title="Ne plus désigner cette pièce">×</button>
+    </div>
+    <div id="attached" class="attached" hidden></div>
+    <form id="composer" class="composer">
+      <button id="attach" type="button" class="attach" title="Joindre une image de référence (ou colle-la, ou glisse-la ici)">＋ Image</button>
+      <input id="file" type="file" accept="image/*" multiple hidden>
+      <textarea id="input" rows="1" placeholder="Décris ton modèle…"></textarea>
+      <button id="send" type="submit" title="Envoyer (Entrée)">Envoyer</button>
+      <button id="stop" type="button" class="stop" hidden>Arrêter</button>
+    </form>
+  </aside>
+
+  <main class="stage">
+    <div id="viewport"></div>
+
+    <div id="empty" class="empty">
+      <div class="empty-mark"></div>
+      <p>Le modèle apparaîtra ici.</p>
+    </div>
+
+    <div class="hud top-left">
+      <div id="dims" class="chip dims" hidden></div>
+    </div>
+
+    <div class="hud top-right">
+      <button id="live" class="tool live" title="Ouvre Blender : l'agent y construira le modèle sous tes yeux"><span class="led"></span><span id="live-label">Voir la fabrication dans Blender</span></button>
+      <button id="history-button" class="tool" hidden title="Revoir les versions précédentes du modèle et y revenir">Versions</button>
+      <button id="photo" class="tool" hidden title="Rendu réaliste de ce que tu vois : ciel, soleil, ombres et reflets (environ 10 s)">Photo réaliste</button>
+      <a id="download" class="tool" hidden title="Télécharger le modèle 3D (.glb), avec couleurs et animation">.glb</a>
+      <a id="download-stl" class="tool" hidden title="Télécharger le fichier pour l'impression 3D (.stl, en millimètres)">.stl</a>
+    </div>
+
+    <div id="side" class="hud side" hidden>
+      <section>
+        <h3>Mode</h3>
+        <div class="seg" id="mode">
+          <button data-mode="orbit" class="on" title="Tourner autour du modèle">Tourner autour</button>
+          <button data-mode="visit" title="Se déplacer librement, y compris à l'intérieur">Visiter</button>
+        </div>
+      </section>
+
+      <section id="viewpoints-box" hidden>
+        <h3>Entrer dans le modèle</h3>
+        <div id="viewpoints" class="stack"></div>
+      </section>
+
+      <section>
+        <h3>Vues</h3>
+        <div class="grid3" id="views">
+          <button data-view="front">Avant</button>
+          <button data-view="back">Arrière</button>
+          <button data-view="iso">3/4</button>
+          <button data-view="left">Gauche</button>
+          <button data-view="right">Droite</button>
+          <button data-view="top">Dessus</button>
+          <button data-view="bottom">Dessous</button>
+        </div>
+      </section>
+
+      <section>
+        <h3>Angle</h3>
+        <div class="pad" id="pad">
+          <button data-dir="up" title="Haut (flèche ↑)">▲</button>
+          <button data-dir="left" title="Gauche (flèche ←)">◀</button>
+          <button data-dir="right" title="Droite (flèche →)">▶</button>
+          <button data-dir="down" title="Bas (flèche ↓)">▼</button>
+        </div>
+      </section>
+
+      <section>
+        <h3>Vue éclatée <span id="explode-value" class="muted"></span></h3>
+        <input id="explode" type="range" min="0" max="100" value="0" title="Glisse pour écarter les pièces les unes des autres, et les rassembler">
+      </section>
+
+      <section>
+        <h3>Coupe <span id="cut-value" class="muted"></span></h3>
+        <div class="seg small" id="cut-axis">
+          <button data-axis="z" class="on" title="Coupe dans la largeur">Largeur</button>
+          <button data-axis="x" title="Coupe dans la longueur">Longueur</button>
+          <button data-axis="y" title="Coupe dans la hauteur">Hauteur</button>
+        </div>
+        <input id="cut" type="range" min="0" max="100" value="100" title="Glisse pour ouvrir le modèle et voir dedans">
+      </section>
+    </div>
+
+    <div id="history" class="hud history" hidden>
+      <h3>Versions du modèle</h3>
+      <div id="history-list" class="history-list"></div>
+    </div>
+
+    <div id="peek" class="hud peek" hidden>
+      <span>Tu regardes une ancienne version : <b id="peek-label"></b></span>
+      <button id="peek-restore" type="button">Revenir à cette version</button>
+      <button id="peek-cancel" type="button">Retour à l’actuelle</button>
+    </div>
+
+    <div id="player" class="hud player" hidden>
+      <button id="play" type="button" title="Lire ou mettre en pause l'animation">▶</button>
+      <input id="timeline" type="range" min="0" max="1000" value="0" title="Avancer ou reculer dans l'animation">
+      <span id="clock"></span>
+    </div>
+
+    <div id="help" class="hud help" hidden></div>
+  </main>
+
+  <script type="module" src="/app.js"></script>
+</body>
+</html>
