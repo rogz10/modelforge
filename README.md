@@ -8,6 +8,9 @@ animation et visite de l'intérieur.
 Exemples de demandes : « un Airbus A350 avec une cabine visitable », « une maison de
 plain-pied meublée », « un robot de 30 cm ».
 
+**[Galerie en ligne](https://rogz10.github.io/modelforge/)** : quatre modèles générés, à explorer dans le
+navigateur sans rien installer.
+
 ![Vue éclatée d'une fusée : les pièces s'écartent puis se rassemblent](docs/vue-eclatee.gif)
 
 | Animation | Coupe |
@@ -128,6 +131,37 @@ navigateur (web/)  ──WebSocket──  serveur (modelforge/server.py)
 
 Chaque projet conserve ses scripts dans `projects/<id>/scripts/` : le dernier script
 complet suffit à reconstruire le modèle.
+
+## Évaluation de l'agent
+
+Un banc d'évaluation joue une série de demandes fixes (`bench/cases.json`, 20 cas : mug,
+table, voiture, maison visitable, fusée animée…) sans interface, et mesure pour chacune :
+
+- si un modèle a été produit ;
+- si les exigences de la demande sont respectées (dimensions à 5 % près, nombre de
+  pièces, animation, points de vue) ;
+- le nombre de passes Blender, dont celles en échec (erreur dans le code généré) ;
+- la durée et le coût estimé.
+
+```
+.venv/bin/python -m modelforge.bench                    # tous les cas
+.venv/bin/python -m modelforge.bench --cases mug,table  # certains cas
+.venv/bin/python -m modelforge.bench --effort high --name soigne
+```
+
+Les résultats sont écrits dans `bench/runs/<nom>/` (`results.md`, `results.json`, et un
+projet par cas). Chaque cas lance une vraie session de l'agent : un passage complet dure
+plusieurs minutes par cas et consomme du forfait Claude ou des crédits API. Les questions
+de l'agent reçoivent une réponse automatique (« choisis la réponse recommandée »).
+
+## Galerie
+
+La galerie est une page statique, dans `docs/`, servie par GitHub Pages. Pour y ajouter
+un modèle ou la mettre à jour après un changement de la visionneuse :
+
+```
+.venv/bin/python -m modelforge.gallery ID_DU_PROJET="Titre affiché"
+```
 
 ## Configuration
 

@@ -1,0 +1,22 @@
+[
+  {"id": "mug", "prompt": "Un mug de 10 cm de haut avec une anse.", "checks": {"hauteur": 0.10}},
+  {"id": "table", "prompt": "Une table de salle à manger en bois de 1,80 m de long.", "checks": {"longueur": 1.80}},
+  {"id": "chaise", "prompt": "Une chaise de bureau à roulettes.", "checks": {"hauteur": [0.8, 1.4]}},
+  {"id": "bibliotheque", "prompt": "Une bibliothèque de 2 m de haut avec 5 étagères.", "checks": {"hauteur": 2.0, "pieces_min": 6}},
+  {"id": "robot", "prompt": "Un robot humanoïde de 30 cm de haut.", "checks": {"hauteur": 0.30}},
+  {"id": "lampadaire", "prompt": "Un lampadaire de rue de 6 m de haut.", "checks": {"hauteur": 6.0}},
+  {"id": "guitare", "prompt": "Une guitare acoustique de 1 m de long.", "checks": {"plus_grande": 1.0}},
+  {"id": "echiquier", "prompt": "Un échiquier avec toutes ses pièces, sur un plateau de 40 cm de côté.", "checks": {"longueur": {"valeur": 0.40, "tolerance": 0.10}, "pieces_min": 33}},
+  {"id": "velo", "prompt": "Un vélo de ville.", "checks": {"longueur": [1.5, 2.1]}},
+  {"id": "voiture", "prompt": "Une voiture citadine de 3,60 m de long.", "checks": {"longueur": 3.60}},
+  {"id": "voilier", "prompt": "Un voilier de 12 m de long.", "checks": {"longueur": 12.0}},
+  {"id": "train", "prompt": "Un train composé d'une locomotive et de trois wagons, 80 m de long au total.", "checks": {"longueur": 80.0, "pieces_min": 4}},
+  {"id": "satellite", "prompt": "Un satellite avec deux panneaux solaires, 4 m d'envergure.", "checks": {"plus_grande": {"valeur": 4.0, "tolerance": 0.10}}},
+  {"id": "pont", "prompt": "Un pont suspendu de 200 m de long.", "checks": {"longueur": 200.0}},
+  {"id": "cuisine", "prompt": "Une cuisine équipée en L avec un îlot central.", "checks": {"pieces_min": 8}},
+  {"id": "maison", "prompt": "Une maison de plain-pied de 10 m sur 8 m, avec un salon et une cuisine que je peux visiter.", "checks": {"longueur": {"valeur": 10.0, "tolerance": 0.10}, "points_de_vue_min": 1}},
+  {"id": "horloge", "prompt": "Une horloge murale de 30 cm de diamètre dont les aiguilles tournent.", "checks": {"plus_grande": {"valeur": 0.30, "tolerance": 0.10}, "animation": true}},
+  {"id": "drone", "prompt": "Un drone quadricoptère de 35 cm d'envergure dont les hélices tournent.", "checks": {"longueur": {"valeur": 0.35, "tolerance": 0.15}, "animation": true}},
+  {"id": "eolienne", "prompt": "Une éolienne avec un mât de 80 m dont les pales tournent.", "checks": {"hauteur": [80, 150], "animation": true}},
+  {"id": "fusee", "prompt": "Une fusée de 50 m de haut ; anime son décollage.", "checks": {"hauteur": 50.0, "animation": true}}
+]

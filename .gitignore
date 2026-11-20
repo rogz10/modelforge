@@ -7,3 +7,4 @@ web/node_modules/
 *.blend1
 .live_blender.json
 *.egg-info/
+bench/runs/
